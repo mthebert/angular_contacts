@@ -1,0 +1,81 @@
+<html data-ng-app="demoApp">
+<head>
+	<title>Using Factories</title>
+</head>
+<body>
+	<div>
+		<div data-ng-view="">
+			<!-- Placeholder for views -->
+		</div>
+	</div>
+	<script type="text/javascript" src="js/angular.min.js"></script>
+	<script type="text/javascript" src="js/angular-route.min.js"></script>
+	<script type="text/javascript">
+		// define our Angular application/module
+		// the first parameter passed gets put in the HTML tag for this SPA
+		var demoApp = angular.module('demoApp', ['ngRoute']);
+
+
+		// using .config() we can define our routes and the partials they call
+		demoApp.config(function ($routeProvider){
+			$routeProvider
+				.when('/view1',
+				{
+					controller: 'SimpleController',
+					templateUrl: 'partials/view1.html'
+				})
+				.when('/view2',
+				{
+					controller: 'SimpleController',
+					templateUrl: 'partials/view2.html'
+				})
+				.otherwise({ redirectTo: '/view1' });
+		});
+		// moving our scope definition to a factory
+		// we could make an ajax http call here for getCustomers 
+		// then pass the object to the anony function for SimpleFactory
+		demoApp.factory('simpleFactory', function(){
+			var factory = {};
+			var customers = [
+				{name: 'John Smith', city: 'Phoenix'}, 
+				{name: 'John Doe', city:'New York' }, 
+				{name: 'Jane Doe', city: 'San Francisco' }
+			];
+
+			factory.getCustomers = function(){
+				return customers;
+			};
+			return factory;
+		});
+
+		// this holds all our controllers for the module
+		var controllers = {};
+
+		// this creates the main controller we are using for this module
+		// and then passes in an anonymous function which defines our $scope/view model
+		// and the factory that fills our customers object in the scope
+		// the name of our controller is then referenced in the top DIV tag
+		controllers.SimpleController =  function ($scope, simpleFactory){
+			// our scope can now be referenced in the controller section above by using the model iterator and referencing the object's parts
+			// cust.name, cust.city
+			$scope.customers = [];
+			init();
+
+			// private init function
+			function init(){
+				$scope.customers=simpleFactory.getCustomers();
+			}
+			// from form on the bottom of view1 and view2, click the button and add to the $scope
+			$scope.addCustomer = function(){
+				$scope.customers.push({
+					name: $scope.newCustomer.name, 
+					city: $scope.newCustomer.city
+				});
+			}
+		};
+		
+		// this initializes our controller
+		demoApp.controller(controllers);
+	</script>
+</body>
+</html>

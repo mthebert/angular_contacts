@@ -1,0 +1,42 @@
+<html data-ng-app="demoApp">
+<head>
+	<title>Using Modules</title>
+</head>
+<body>
+	<div data-ng-controller="SimpleController">
+		Name:
+		<br />
+		<input type="text" data-ng-model="name" />
+		<br />
+		<ul>
+			<li data-ng-repeat="cust in customers | filter:name | orderBy: 'city' "> {{ cust.name | uppercase }}  - {{ cust.city | lowercase}}
+			</li>
+		</ul>
+	</div>
+	<script type="text/javascript" src="js/angular.min.js"></script>
+	<script type="text/javascript">
+		// define our Angular application/module
+		// the first parameter passed gets put in the HTML tag for this SPA
+		var demoApp = angular.module('demoApp', []);
+
+		// this holds all our controllers for the module
+		var controllers = {};
+
+		// this creates the main controller we are using for this module
+		// and then passes in an anonymous function which defines our $scope/view model
+		// the name of our controller is then referenced in the top DIV tag
+		controllers.SimpleController =  function ($scope){
+			// our scope can now be referenced in the controller section above by using the model iterator and referencing the object's parts
+			// cust.name, cust.city
+			$scope.customers=[
+				{name: 'John Smith', city: 'Phoenix'}, 
+				{name: 'John Doe', city:'New York' }, 
+				{name: 'Jane Doe', city: 'San Francisco' }
+			];
+		};
+		
+		// this initializes our controller
+		demoApp.controller(controllers);
+	</script>
+</body>
+</html>
